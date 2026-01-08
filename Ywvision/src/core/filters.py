@@ -70,33 +70,38 @@ def filter_valid_prices(markets: List[MarketRecord]) -> List[MarketRecord]:
 
 def is_crypto_market(market: MarketRecord) -> bool:
     """
-    Check if market is a crypto market
-    
-    Rule: category contains "crypto" (case-insensitive)
-    
-    Args:
-        market: MarketRecord object
-    
-    Returns:
-        True if crypto market
+    Detect crypto markets reliably:
+    - API category contains 'crypto' (case-insensitive)
+    - OR question contains common crypto keywords
     """
-    if not market.category:
-        return False
-    return 'crypto' in market.category.lower()
+    if market.category and 'crypto' in market.category.lower():
+        return True
+    
+    if market.question:
+        crypto_keywords = [
+            'bitcoin', 'btc', 'ethereum', 'eth', 'solana', 'sol', 'xrp',
+            'crypto', 'binance', 'coinbase', 'hyperliquid', 'okx', 'megaeth'
+        ]
+        return any(keyword in market.question.lower() for keyword in crypto_keywords)
+    
+    return False
 
 
 def is_sports_market(market: MarketRecord) -> bool:
     """
-    Check if market is a sports market
-    
-    Rule: category contains "sports" (case-insensitive)
-    
-    Args:
-        market: MarketRecord object
-    
-    Returns:
-        True if sports market
+    Detect sports markets reliably:
+    - API category contains 'sports'
+    - OR question contains common sports keywords
     """
-    if not market.category:
-        return False
-    return 'sports' in market.category.lower()
+    if market.category and 'sports' in market.category.lower():
+        return True
+    
+    if market.question:
+        sports_keywords = [
+            'nfl', 'nba', 'afc', 'nfc', 'super bowl', 'championship',
+            'eagles', 'packers', 'rams', 'bears', 'chiefs', 'rams', 'seahawks',
+            'football', 'basketball', 'soccer', 'world cup'
+        ]
+        return any(keyword in market.question.lower() for keyword in sports_keywords)
+    
+    return False
